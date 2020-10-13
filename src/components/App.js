@@ -1,64 +1,54 @@
 import React, { useState, useEffect } from "react";
+import Pnl from "./Pnl";
+import CancelOrders from "./CancelOrders";
 import binance from "../binanceAPI/api";
 import Dropdown from "react-dropdown";
 import styled from "styled-components";
 import { symbols } from "../variables/symbols";
 import "react-dropdown/style.css";
+export const baseSymbol = "RENUSDT";
 
 const App = () => {
   const [price, setPrice] = useState(null);
   const [strategy, setStrategy] = useState(true);
   const [positionSize, setPositionSize] = useState(null);
-  const [profitAndLoss, setProfitAndLoss] = useState(null);
-  const [balance, setBalance] = useState(null);
   const [takeProfit, setTakeProfit] = useState(0.5);
+  const [profitAndLoss, setProfitAndLoss] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
   const [priceDeviationLong, setPriceDeviationLong] = useState(0.998);
   const [priceDeviationShort, setPriceDeviationShort] = useState(1.002);
   const [safetyOrderStep, setSafetyOrderStep] = useState(1);
   const [startBot, setStartBot] = useState(false);
-  const [cancelOrders, setCancelOrders] = useState(false);
   const [stackBook, setStackBook] = useState(false);
   const [pyramidQuantity, setPyramidQuantity] = useState();
   const [pyramidOrder, setPyramidOrder] = useState(false);
   const [symbol, setSymbol] = useState(symbols);
 
-  const baseSymbol = "ADAUSDT";
+  const defaultOption = "RENUSDT";
 
-  const defaultOption = "ADAUSDT";
-
-  // Get base currency balances
-  useEffect(() => {
-    const futuresBalance = async () => {
-      setBalance(await binance.futuresBalance());
-    };
-    futuresBalance();
-    console.log(`Balance = ${balance}`);
-  }, []);
-
-  //  Retreive current coin/token price
-  useEffect(() => {
-    setInterval(() => {
-      const coinPrices = async () => {
-        let tokenPrice = await binance.futuresPrices();
-        setPrice(tokenPrice.ADAUSDT);
-      };
-      coinPrices();
-      // console.log(price);
-    }, 10000);
-  }, []);
-
-  //  Retreive PNL
+  // Retreive PNL
   useEffect(() => {
     setInterval(() => {
       const calclateProfitAndLoss = async () => {
         let profit = await binance.futuresPositionRisk();
-        setProfitAndLoss(profit[11].unRealizedProfit);
+        setProfitAndLoss(profit[47].unRealizedProfit);
       };
       calclateProfitAndLoss();
       // console.log(price);
     }, 3000);
+  }, []);
+
+  // Retreive current coin/token price
+  useEffect(() => {
+    setInterval(() => {
+      const coinPrices = async () => {
+        let tokenPrice = await binance.futuresPrices();
+        setPrice(tokenPrice.RENUSDT);
+      };
+      coinPrices();
+      // console.log(price);
+    }, 10000);
   }, []);
 
   // Calculate Position size
@@ -66,9 +56,8 @@ const App = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setPositionSize(pos[11].positionAmt);
-        //   console.log(`Position Size ${positionSize}`);
-        console.log(pos[11]);
+        setPositionSize(pos[47].positionAmt);
+        console.log(pos[47]);
       };
       size();
     }, 10000);
@@ -81,26 +70,32 @@ const App = () => {
         await binance.futuresBuy(
           baseSymbol,
           quantity,
-          parseFloat(price).toFixed(5)
+          parseFloat(price * priceDeviationLong).toFixed(5)
         );
         // Safety Order One
         await binance.futuresBuy(
           baseSymbol,
           quantity * dcaQuantity,
-          parseFloat(price * priceDeviationLong).toFixed(5)
+          parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(5)
         );
         // Safety Order Two
         await binance.futuresBuy(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity,
-          parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(5)
+          parseFloat(
+            price * priceDeviationLong * priceDeviationLong * priceDeviationLong
+          ).toFixed(5)
         );
         // Safety Order Three
         await binance.futuresBuy(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity,
           parseFloat(
-            price * priceDeviationLong * priceDeviationLong * priceDeviationLong
+            price *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong
           ).toFixed(5)
         );
         // Safety Order Four
@@ -109,6 +104,7 @@ const App = () => {
           quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
           parseFloat(
             price *
+              priceDeviationLong *
               priceDeviationLong *
               priceDeviationLong *
               priceDeviationLong *
@@ -126,6 +122,7 @@ const App = () => {
             dcaQuantity,
           parseFloat(
             price *
+              priceDeviationLong *
               priceDeviationLong *
               priceDeviationLong *
               priceDeviationLong *
@@ -150,9 +147,32 @@ const App = () => {
               priceDeviationLong *
               priceDeviationLong *
               priceDeviationLong *
+              priceDeviationLong *
               priceDeviationLong
           ).toFixed(5)
-          //   parseFloat(coinPrice[currencyPair] * 0.998).toFixed(5)
+        );
+        // Safety Order Seven
+        await binance.futuresBuy(
+          baseSymbol,
+          quantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity,
+          parseFloat(
+            price *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong
+          ).toFixed(5)
         );
       }
     };
@@ -176,20 +196,25 @@ const App = () => {
         await binance.futuresSell(
           baseSymbol,
           quantity,
-          parseFloat(price * 1.0002).toFixed(5)
+          parseFloat(price * priceDeviationShort).toFixed(5)
         );
         // Safety Order One
         await binance.futuresSell(
           baseSymbol,
           quantity * dcaQuantity,
-          parseFloat(price * 1.0002 * priceDeviationShort).toFixed(5)
+          parseFloat(price * priceDeviationShort * priceDeviationShort).toFixed(
+            5
+          )
         );
         // Safety Order Two
         await binance.futuresSell(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity,
           parseFloat(
-            price * 1.0002 * priceDeviationShort * priceDeviationShort
+            price *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort
           ).toFixed(5)
         );
         // Safety Order Three
@@ -198,7 +223,7 @@ const App = () => {
           quantity * dcaQuantity * dcaQuantity * dcaQuantity,
           parseFloat(
             price *
-              1.0002 *
+              priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort
@@ -210,7 +235,7 @@ const App = () => {
           quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
           parseFloat(
             price *
-              1.0002 *
+              priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
@@ -228,7 +253,7 @@ const App = () => {
             dcaQuantity,
           parseFloat(
             price *
-              1.0002 *
+              priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
@@ -248,7 +273,30 @@ const App = () => {
             dcaQuantity,
           parseFloat(
             price *
-              1.0002 *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort
+          ).toFixed(5)
+        );
+        // Safety Order Seven
+        await binance.futuresSell(
+          baseSymbol,
+          quantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity *
+            dcaQuantity,
+          parseFloat(
+            price *
+              priceDeviationShort *
+              priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
               priceDeviationShort *
@@ -262,6 +310,18 @@ const App = () => {
     futuresLimitSell();
   }, [startBot, strategy, stackBook]);
 
+  useEffect(() => {
+    const takeProfit = async () => {
+      if (profitAndLoss > 0.0003 && strategy) {
+        await binance.futuresSell(baseSymbol, positionSize, price);
+      }
+      if (profitAndLoss < -0.0003 && !strategy) {
+        await binance.futuresSell(baseSymbol, positionSize, price);
+      }
+    };
+    takeProfit();
+  }, []);
+
   // Pyramid Sell
   useEffect(() => {
     const pyramidShort = async () => {
@@ -271,16 +331,6 @@ const App = () => {
     };
     pyramidShort();
   }, [startBot, strategy, pyramidOrder]);
-
-  // Cancel all active orders
-  useEffect(() => {
-    const cancel = async () => {
-      if (cancelOrders) {
-        await binance.futuresCancelAll(baseSymbol);
-      }
-    };
-    cancel();
-  }, [cancelOrders]);
 
   return (
     <BaseStyle>
@@ -294,8 +344,9 @@ const App = () => {
           placeholder="Select a coin/token to trade"
         />
       </h2>
-      <h2>{`Current price of: ADAUSDT = ${price}`}</h2>
+      <h2>{`Current price of: RENUSDT = ${price}`}</h2>
       <h2>{`Current position size = ${positionSize}`}</h2>
+      {/* <Pnl /> */}
       <h2>{`PNL(ROE%) = ${profitAndLoss}`}</h2>
       <h2>
         Start Bot!{" "}
@@ -374,12 +425,7 @@ const App = () => {
           {!pyramidOrder ? "PYRAMID ORDER" : "PYRAMID ORDER COMPLETE"}
         </button>
       </h2>
-      <h2>
-        Cancel all active orders{" "}
-        <button onClick={() => setCancelOrders(!cancelOrders)}>
-          {!cancelOrders ? "Cancel" : "Cancelled"}
-        </button>
-      </h2>
+      <CancelOrders />
     </BaseStyle>
   );
 };
@@ -403,7 +449,7 @@ const BaseStyle = styled.div`
 //   useEffect(() => {
 //     const initialBuyOrder = async () => {
 //       // Chose pair to trade
-//       let currencyPair = "ADAUSDT";
+//       let currencyPair = "RENUSDT";
 //       // Chose amount to trade
 //       let amount = 1;
 //       // Get coin price
