@@ -1,90 +1,37 @@
 import React, { useState, useEffect } from "react";
 import binance from "../binanceAPI/api";
+import Dropdown from "react-dropdown";
+import styled from "styled-components";
+import { symbols } from "../variables/symbols";
+import "react-dropdown/style.css";
 
 const App = () => {
   const [price, setPrice] = useState(null);
   const [strategy, setStrategy] = useState(true);
   const [positionSize, setPositionSize] = useState(null);
   const [balance, setBalance] = useState(null);
-  const [hedge, setSide] = useState(false);
+  const [takeProfit, setTakeProfit] = useState(0.5);
   const [quantity, setQuantity] = useState(1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
+  const [priceDev, setPriceDev] = useState(0.2);
+  const [safetyOrderStep, setSafetyOrderStep] = useState(1);
   const [startBot, setStartBot] = useState(false);
   const [cancelOrders, setCancelOrders] = useState(false);
-  const [symbol, setSymbol] = useState([
-    "BTCUSDT",
-    "ETHUSDT",
-    "BCHUSDT",
-    "XRPUSDT",
-    "EOSUSDT",
-    "LTCUSDT",
-    "TRXUSDT",
-    "ETCUSDT",
-    "LINKUSDT",
-    "XLMUSDT",
-    "ADAUSDT",
-    "XMRUSDT",
-    "DASHUSDT",
-    "ZECUSDT",
-    "XTZUSDT",
-    "BNBUSDT",
-    "ATOMUSDT",
-    "ONTUSDT",
-    "IOTAUSDT",
-    "BATUSDT",
-    "NEOUSDT",
-    "QTUMUSDT",
-    "IOSTUSDT",
-    "THETAUSDT",
-    "KNCUSDT",
-    "ZRXUSDT",
-    "COMPUSDT",
-    "VETUSDT",
-    "ALGOUSDT",
-    "ZILUSDT",
-    "OMGUSDT",
-    "DOGEUSDT",
-    "SXPUSDT",
-    "LENDUSDT",
-    "KAVAUSDT",
-    "BANDUSDT",
-    "RLCUSDT",
-    "WAVESUSDT",
-    "MKRUSDT",
-    "SNXUSDT",
-    "DOTUSDT",
-    "DEFIUSDT",
-    "YFIUSDT",
-    "BALUSDT",
-    "CRVUSDT",
-    "TRBUSDT",
-    "YFIIUSDT",
-    "RUNEUSDT",
-    "SUSHIUSDT",
-    "SRMUSDT",
-    "BZRXUSDT",
-    "EGLDUSDT",
-    "SOLUSDT",
-    "ICXUSDT",
-    "STORJUSDT",
-    "BLZUSDT",
-    "UNIUSDT",
-    "AVAXUSDT",
-    "FTMUSDT",
-    "HNTUSDT",
-    "ENJUSDT",
-    "FLMUSDT",
-    "TOMOUSDT",
-  ]);
+  const [stackBook, setStackBook] = useState(false);
+  const [symbol, setSymbol] = useState(symbols);
+
+  const baseSymbol = "ADAUSDT";
+
+  const defaultOption = "ADAUSDT";
 
   // Get base currency balances
-  //   useEffect(() => {
-  //     const futuresBalance = async () => {
-  //       setBalance(await binance.futuresBalance());
-  //     };
-  //     futuresBalance();
-  //     console.log(`Balance = ${balance}`);
-  //   }, []);
+  useEffect(() => {
+    const futuresBalance = async () => {
+      setBalance(await binance.futuresBalance());
+    };
+    futuresBalance();
+    console.log(`Balance = ${balance}`);
+  }, []);
 
   //  Retreive current coin/token price
   useEffect(() => {
@@ -114,31 +61,31 @@ const App = () => {
   //  PLace buy order
   useEffect(() => {
     const futuresLimitBuy = async () => {
-      if (startBot && strategy) {
-        await binance.futuresBuy(symbol, quantity, 0.1);
+      if (startBot && strategy && stackBook) {
+        await binance.futuresBuy(baseSymbol, quantity, 0.1);
         // Safety Order One
-        await binance.futuresBuy(symbol, quantity * dcaQuantity, 0.09);
+        await binance.futuresBuy(baseSymbol, quantity * dcaQuantity, 0.09);
         // Safety Order Two
         await binance.futuresBuy(
-          symbol,
+          baseSymbol,
           quantity * dcaQuantity * dcaQuantity,
           0.09
         );
         // Safety Order Three
         await binance.futuresBuy(
-          symbol,
+          baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity,
           0.09
         );
         // Safety Order Four
         await binance.futuresBuy(
-          symbol,
+          baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
           0.09
         );
         // Safety Order Five
         await binance.futuresBuy(
-          symbol,
+          baseSymbol,
           quantity *
             dcaQuantity *
             dcaQuantity *
@@ -149,7 +96,7 @@ const App = () => {
         );
         // Safety Order Six
         await binance.futuresBuy(
-          symbol,
+          baseSymbol,
           quantity *
             dcaQuantity *
             dcaQuantity *
@@ -162,36 +109,36 @@ const App = () => {
       }
     };
     futuresLimitBuy();
-  }, [startBot, strategy]);
+  }, [startBot, strategy, stackBook]);
 
   // Place sell order
   useEffect(() => {
     const futuresLimitSell = async () => {
-      if (startBot && !strategy) {
-        await binance.futuresSell(symbol, quantity, 0.2);
+      if (startBot && !strategy && stackBook) {
+        await binance.futuresSell(baseSymbol, quantity, 0.2);
         // Safety Order One
-        await binance.futuresSell(symbol, quantity * dcaQuantity, 0.21);
+        await binance.futuresSell(baseSymbol, quantity * dcaQuantity, 0.21);
         // Safety Order Two
         await binance.futuresSell(
-          symbol,
+          baseSymbol,
           quantity * dcaQuantity * dcaQuantity,
           0.21
         );
         // Safety Order Three
         await binance.futuresSell(
-          symbol,
+          baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity,
           0.21
         );
         // Safety Order Four
         await binance.futuresSell(
-          symbol,
+          baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
           0.21
         );
         // Safety Order Five
         await binance.futuresSell(
-          symbol,
+          baseSymbol,
           quantity *
             dcaQuantity *
             dcaQuantity *
@@ -202,7 +149,7 @@ const App = () => {
         );
         // Safety Order Six
         await binance.futuresSell(
-          symbol,
+          baseSymbol,
           quantity *
             dcaQuantity *
             dcaQuantity *
@@ -215,13 +162,13 @@ const App = () => {
       }
     };
     futuresLimitSell();
-  }, [startBot, strategy]);
+  }, [startBot, strategy, stackBook]);
 
   // Cancel all active orders
   useEffect(() => {
     const cancel = async () => {
       if (cancelOrders) {
-        await binance.futuresCancelAll(symbol);
+        await binance.futuresCancelAll(baseSymbol);
       }
     };
     cancel();
@@ -235,13 +182,35 @@ const App = () => {
     setDcaQuantity(e.target.value);
   };
 
+  const onChangeHandlerPriceDev = (e) => {
+    setPriceDev(e.target.value);
+  };
+
+  const onChangeHandlerSafetyOrderStep = (e) => {
+    setSafetyOrderStep(e.target.value);
+  };
+
+  const onChangeHandlerTakeProfit = (e) => {
+    setTakeProfit(e.target.value);
+  };
+
+  const onChangeHandlerSymbol = (e) => {
+    setSymbol(e.target.value);
+  };
+
   return (
-    <div className="App">
+    <BaseStyle>
       <h1>Billy's Bot</h1>
       <h2>
-        Select currency Pair <list>{symbol}</list>
+        Select currency Pair{" "}
+        <Dropdown
+          options={symbol}
+          onChange={(e) => setSymbol(e.target.value)}
+          value={defaultOption}
+          placeholder="Select a coin/token to trade"
+        />
       </h2>
-      <h2>{`Current price of: ${symbol} = ${price}`}</h2>
+      <h2>{`Current price of: ADAUSDT = ${price}`}</h2>
       <h2>{`Current position size = ${positionSize}`}</h2>
       <h2>
         Select Strategy{" "}
@@ -250,7 +219,7 @@ const App = () => {
         </button>
       </h2>
       <h2>
-        Base order size{" "}
+        Base order qunatity size{" "}
         <input
           type="text"
           onChange={onChangeHandlerInitialOrder}
@@ -265,25 +234,62 @@ const App = () => {
           value={dcaQuantity}
         />
       </h2>
-      <h2>Percentage price deviation on open safety order</h2>
-      <h2>{`Hedge current position = ${hedge}`}</h2>
+      <h2>
+        Price deviation % to open safety order{" "}
+        <input
+          type="text"
+          onChange={onChangeHandlerPriceDev}
+          value={priceDev}
+        />
+      </h2>
+      <h2>
+        Safety order step scale{" "}
+        <input
+          type="text"
+          onChange={onChangeHandlerSafetyOrderStep}
+          value={safetyOrderStep}
+        />
+      </h2>
+      <h2>
+        Select take profit %{" "}
+        <input
+          type="text"
+          onChange={onChangeHandlerTakeProfit}
+          value={takeProfit}
+        />
+      </h2>
+      {/* <h2>{`Hedge current position = ${hedge}`}</h2>
       <button onClick={() => setSide(!hedge)}>
         {hedge ? "LONG DCA ORDER" : "HEDGE SHORT"}
-      </button>
+      </button> */}
       <h2>
         Start Bot!{" "}
         <button onClick={() => setStartBot(!startBot)}>
           {!startBot ? "OFF" : "ON"}
         </button>
       </h2>
+      <h2>
+        Stack the book{" "}
+        <button onClick={() => setStackBook(!stackBook)}>
+          {!stackBook ? "PLACE ORDERS" : "ORDERS RECEIVED"}
+        </button>
+      </h2>
       <button onClick={() => setCancelOrders(!cancelOrders)}>
         {!cancelOrders ? "Click to cancel all active orders" : "Cancelled"}
       </button>
-    </div>
+    </BaseStyle>
   );
 };
 
 export default App;
+
+const BaseStyle = styled.div`
+  //   background-color: red;
+  font-family: arial;
+  display: flex-wrap;
+  justify-content: center;
+  text-align: center;
+`;
 
 //   const openOrders = async () => {
 //     let orders = await binance.futuresOpenOrders();
@@ -338,7 +344,7 @@ export default App;
 // const baseUrl = "https://fapi.binance.com";
 // const endPoint = "/fapi/v1/order";
 
-// const symbol = "ADAUSDT";
+// const baseSymbol = "ADAUSDT";
 // const side = "BUY";
 // const type = "LIMIT";
 // const timeInForce = "GTC";
