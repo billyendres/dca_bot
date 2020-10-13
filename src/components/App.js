@@ -18,6 +18,8 @@ const App = () => {
   const [startBot, setStartBot] = useState(false);
   const [cancelOrders, setCancelOrders] = useState(false);
   const [stackBook, setStackBook] = useState(false);
+  const [pyramidQuantity, setPyramidQuantity] = useState();
+  const [pyramidOrder, setPyramidOrder] = useState(false);
   const [symbol, setSymbol] = useState(symbols);
 
   const baseSymbol = "ADAUSDT";
@@ -111,6 +113,16 @@ const App = () => {
     futuresLimitBuy();
   }, [startBot, strategy, stackBook]);
 
+  // Pyramid Buy
+  useEffect(() => {
+    const pyramidLong = async () => {
+      if (startBot && strategy && pyramidOrder) {
+        await binance.futuresMarketBuy(baseSymbol, pyramidQuantity);
+      }
+    };
+    pyramidLong();
+  }, [startBot, strategy, pyramidOrder]);
+
   // Place sell order
   useEffect(() => {
     const futuresLimitSell = async () => {
@@ -164,6 +176,16 @@ const App = () => {
     futuresLimitSell();
   }, [startBot, strategy, stackBook]);
 
+  // Pyramid Sell
+  useEffect(() => {
+    const pyramidShort = async () => {
+      if (startBot && !strategy && pyramidOrder) {
+        await binance.futuresMarketSell(baseSymbol, pyramidQuantity);
+      }
+    };
+    pyramidShort();
+  }, [startBot, strategy, pyramidOrder]);
+
   // Cancel all active orders
   useEffect(() => {
     const cancel = async () => {
@@ -194,13 +216,17 @@ const App = () => {
     setTakeProfit(e.target.value);
   };
 
+  const onChangeHandlerPyramidQuantity = (e) => {
+    setPyramidQuantity(e.target.value);
+  };
+
   const onChangeHandlerSymbol = (e) => {
     setSymbol(e.target.value);
   };
 
   return (
     <BaseStyle>
-      <h1>Billy's Bot</h1>
+      <h1>Billy's DCA Bot</h1>
       <h2>
         Select currency Pair{" "}
         <Dropdown
@@ -212,6 +238,13 @@ const App = () => {
       </h2>
       <h2>{`Current price of: ADAUSDT = ${price}`}</h2>
       <h2>{`Current position size = ${positionSize}`}</h2>
+      <h2>PNL(ROE%)</h2>
+      <h2>
+        Start Bot!{" "}
+        <button onClick={() => setStartBot(!startBot)}>
+          {!startBot ? "OFF" : "ON"}
+        </button>
+      </h2>
       <h2>
         Select Strategy{" "}
         <button onClick={() => setStrategy(!strategy)}>
@@ -258,25 +291,29 @@ const App = () => {
           value={takeProfit}
         />
       </h2>
-      {/* <h2>{`Hedge current position = ${hedge}`}</h2>
-      <button onClick={() => setSide(!hedge)}>
-        {hedge ? "LONG DCA ORDER" : "HEDGE SHORT"}
-      </button> */}
       <h2>
-        Start Bot!{" "}
-        <button onClick={() => setStartBot(!startBot)}>
-          {!startBot ? "OFF" : "ON"}
-        </button>
-      </h2>
-      <h2>
-        Stack the book{" "}
+        Stack the book {strategy ? "LONG" : "SHORT"}{" "}
         <button onClick={() => setStackBook(!stackBook)}>
           {!stackBook ? "PLACE ORDERS" : "ORDERS RECEIVED"}
         </button>
       </h2>
-      <button onClick={() => setCancelOrders(!cancelOrders)}>
-        {!cancelOrders ? "Click to cancel all active orders" : "Cancelled"}
-      </button>
+      <h2>
+        Pyramid quantity (Market order) {strategy ? "LONG" : "SHORT"}{" "}
+        <input
+          type="text"
+          onChange={onChangeHandlerPyramidQuantity}
+          value={pyramidQuantity}
+        />{" "}
+        <button onClick={() => setPyramidOrder(!pyramidOrder)}>
+          {!pyramidOrder ? "PYRAMID ORDER" : "PYRAMID ORDER COMPLETE"}
+        </button>
+      </h2>
+      <h2>
+        Cancel all active orders{" "}
+        <button onClick={() => setCancelOrders(!cancelOrders)}>
+          {!cancelOrders ? "Cancel" : "Cancelled"}
+        </button>
+      </h2>
     </BaseStyle>
   );
 };
