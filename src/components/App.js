@@ -9,6 +9,7 @@ const App = () => {
   const [price, setPrice] = useState(null);
   const [strategy, setStrategy] = useState(true);
   const [positionSize, setPositionSize] = useState(null);
+  const [profitAndLoss, setProfitAndLoss] = useState(null);
   const [balance, setBalance] = useState(null);
   const [takeProfit, setTakeProfit] = useState(0.5);
   const [quantity, setQuantity] = useState(1);
@@ -48,6 +49,18 @@ const App = () => {
     }, 10000);
   }, []);
 
+  //  Retreive PNL
+  useEffect(() => {
+    setInterval(() => {
+      const calclateProfitAndLoss = async () => {
+        let profit = await binance.futuresPositionRisk();
+        setProfitAndLoss(profit[11].unRealizedProfit);
+      };
+      calclateProfitAndLoss();
+      // console.log(price);
+    }, 3000);
+  }, []);
+
   // Calculate Position size
   useEffect(() => {
     setInterval(() => {
@@ -65,7 +78,11 @@ const App = () => {
   useEffect(() => {
     const futuresLimitBuy = async () => {
       if (startBot && strategy && stackBook) {
-        await binance.futuresBuy(baseSymbol, quantity, price);
+        await binance.futuresBuy(
+          baseSymbol,
+          quantity,
+          parseFloat(price).toFixed(5)
+        );
         // Safety Order One
         await binance.futuresBuy(
           baseSymbol,
@@ -265,34 +282,6 @@ const App = () => {
     cancel();
   }, [cancelOrders]);
 
-  const onChangeHandlerInitialOrder = (e) => {
-    setQuantity(e.target.value);
-  };
-
-  const onChangeHandlerDcaOrder = (e) => {
-    setDcaQuantity(e.target.value);
-  };
-
-  const onChangeHandlerPriceDeviation = (e) => {
-    setPriceDeviationLong(e.target.value);
-  };
-
-  const onChangeHandlerSafetyOrderStep = (e) => {
-    setSafetyOrderStep(e.target.value);
-  };
-
-  const onChangeHandlerTakeProfit = (e) => {
-    setTakeProfit(e.target.value);
-  };
-
-  const onChangeHandlerPyramidQuantity = (e) => {
-    setPyramidQuantity(e.target.value);
-  };
-
-  const onChangeHandlerSymbol = (e) => {
-    setSymbol(e.target.value);
-  };
-
   return (
     <BaseStyle>
       <h1>Billy's DCA Bot</h1>
@@ -307,7 +296,7 @@ const App = () => {
       </h2>
       <h2>{`Current price of: ADAUSDT = ${price}`}</h2>
       <h2>{`Current position size = ${positionSize}`}</h2>
-      <h2>PNL(ROE%)</h2>
+      <h2>{`PNL(ROE%) = ${profitAndLoss}`}</h2>
       <h2>
         Start Bot!{" "}
         <button onClick={() => setStartBot(!startBot)}>
@@ -324,7 +313,7 @@ const App = () => {
         Base order qunatity size{" "}
         <input
           type="text"
-          onChange={onChangeHandlerInitialOrder}
+          onChange={(e) => setQuantity(e.target.value)}
           value={quantity}
         />
       </h2>
@@ -332,20 +321,20 @@ const App = () => {
         Safety order size eg. Base order * 2 (Compounding){" "}
         <input
           type="text"
-          onChange={onChangeHandlerDcaOrder}
+          onChange={(e) => setDcaQuantity(e.target.value)}
           value={dcaQuantity}
         />
       </h2>
       <h2>
-        Price deviation % to open safety order - LONG Strategy{" "}
+        Price deviation % to open safety order - LONG Strategy (Default 0.2%){" "}
         <input
           type="text"
-          onChange={onChangeHandlerPriceDeviation}
+          onChange={(e) => setPriceDeviationLong(e.target.value)}
           value={priceDeviationLong}
         />
       </h2>
       <h2>
-        Price deviation % to open safety order - SHORT Strategy{" "}
+        Price deviation % to open safety order - SHORT Strategy (Default 0.2%){" "}
         <input
           type="text"
           onChange={(e) => setPriceDeviationShort(e.target.value)}
@@ -356,7 +345,7 @@ const App = () => {
         Safety order step scale{" "}
         <input
           type="text"
-          onChange={onChangeHandlerSafetyOrderStep}
+          onChange={(e) => setSafetyOrderStep(e.target.value)}
           value={safetyOrderStep}
         />
       </h2>
@@ -364,7 +353,7 @@ const App = () => {
         Select take profit %{" "}
         <input
           type="text"
-          onChange={onChangeHandlerTakeProfit}
+          onChange={(e) => setTakeProfit(e.target.value)}
           value={takeProfit}
         />
       </h2>
@@ -378,7 +367,7 @@ const App = () => {
         Pyramid quantity (Market order) {strategy ? "LONG" : "SHORT"}{" "}
         <input
           type="text"
-          onChange={onChangeHandlerPyramidQuantity}
+          onChange={(e) => setPyramidQuantity(e.target.value)}
           value={pyramidQuantity}
         />{" "}
         <button onClick={() => setPyramidOrder(!pyramidOrder)}>
