@@ -13,7 +13,8 @@ const App = () => {
   const [takeProfit, setTakeProfit] = useState(0.5);
   const [quantity, setQuantity] = useState(1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
-  const [priceDev, setPriceDev] = useState(0.2);
+  const [priceDeviationLong, setPriceDeviationLong] = useState(0.998);
+  const [priceDeviationShort, setPriceDeviationShort] = useState(1.002);
   const [safetyOrderStep, setSafetyOrderStep] = useState(1);
   const [startBot, setStartBot] = useState(false);
   const [cancelOrders, setCancelOrders] = useState(false);
@@ -64,26 +65,38 @@ const App = () => {
   useEffect(() => {
     const futuresLimitBuy = async () => {
       if (startBot && strategy && stackBook) {
-        await binance.futuresBuy(baseSymbol, quantity, 0.1);
+        await binance.futuresBuy(baseSymbol, quantity, price);
         // Safety Order One
-        await binance.futuresBuy(baseSymbol, quantity * dcaQuantity, 0.09);
+        await binance.futuresBuy(
+          baseSymbol,
+          quantity * dcaQuantity,
+          parseFloat(price * priceDeviationLong).toFixed(5)
+        );
         // Safety Order Two
         await binance.futuresBuy(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity,
-          0.09
+          parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(5)
         );
         // Safety Order Three
         await binance.futuresBuy(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          0.09
+          parseFloat(
+            price * priceDeviationLong * priceDeviationLong * priceDeviationLong
+          ).toFixed(5)
         );
         // Safety Order Four
         await binance.futuresBuy(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          0.09
+          parseFloat(
+            price *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong
+          ).toFixed(5)
         );
         // Safety Order Five
         await binance.futuresBuy(
@@ -94,7 +107,14 @@ const App = () => {
             dcaQuantity *
             dcaQuantity *
             dcaQuantity,
-          0.09
+          parseFloat(
+            price *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong
+          ).toFixed(5)
         );
         // Safety Order Six
         await binance.futuresBuy(
@@ -106,7 +126,16 @@ const App = () => {
             dcaQuantity *
             dcaQuantity *
             dcaQuantity,
-          0.09
+          parseFloat(
+            price *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong *
+              priceDeviationLong
+          ).toFixed(5)
+          //   parseFloat(coinPrice[currencyPair] * 0.998).toFixed(5)
         );
       }
     };
@@ -127,26 +156,49 @@ const App = () => {
   useEffect(() => {
     const futuresLimitSell = async () => {
       if (startBot && !strategy && stackBook) {
-        await binance.futuresSell(baseSymbol, quantity, 0.2);
+        await binance.futuresSell(
+          baseSymbol,
+          quantity,
+          parseFloat(price * 1.0002).toFixed(5)
+        );
         // Safety Order One
-        await binance.futuresSell(baseSymbol, quantity * dcaQuantity, 0.21);
+        await binance.futuresSell(
+          baseSymbol,
+          quantity * dcaQuantity,
+          parseFloat(price * 1.0002 * priceDeviationShort).toFixed(5)
+        );
         // Safety Order Two
         await binance.futuresSell(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity,
-          0.21
+          parseFloat(
+            price * 1.0002 * priceDeviationShort * priceDeviationShort
+          ).toFixed(5)
         );
         // Safety Order Three
         await binance.futuresSell(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          0.21
+          parseFloat(
+            price *
+              1.0002 *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort
+          ).toFixed(5)
         );
         // Safety Order Four
         await binance.futuresSell(
           baseSymbol,
           quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          0.21
+          parseFloat(
+            price *
+              1.0002 *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort
+          ).toFixed(5)
         );
         // Safety Order Five
         await binance.futuresSell(
@@ -157,7 +209,15 @@ const App = () => {
             dcaQuantity *
             dcaQuantity *
             dcaQuantity,
-          0.21
+          parseFloat(
+            price *
+              1.0002 *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort
+          ).toFixed(5)
         );
         // Safety Order Six
         await binance.futuresSell(
@@ -169,7 +229,16 @@ const App = () => {
             dcaQuantity *
             dcaQuantity *
             dcaQuantity,
-          0.21
+          parseFloat(
+            price *
+              1.0002 *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort *
+              priceDeviationShort
+          ).toFixed(5)
         );
       }
     };
@@ -204,8 +273,8 @@ const App = () => {
     setDcaQuantity(e.target.value);
   };
 
-  const onChangeHandlerPriceDev = (e) => {
-    setPriceDev(e.target.value);
+  const onChangeHandlerPriceDeviation = (e) => {
+    setPriceDeviationLong(e.target.value);
   };
 
   const onChangeHandlerSafetyOrderStep = (e) => {
@@ -260,7 +329,7 @@ const App = () => {
         />
       </h2>
       <h2>
-        Safety order size eg. Base order * 2{" "}
+        Safety order size eg. Base order * 2 (Compounding){" "}
         <input
           type="text"
           onChange={onChangeHandlerDcaOrder}
@@ -268,11 +337,19 @@ const App = () => {
         />
       </h2>
       <h2>
-        Price deviation % to open safety order{" "}
+        Price deviation % to open safety order - LONG Strategy{" "}
         <input
           type="text"
-          onChange={onChangeHandlerPriceDev}
-          value={priceDev}
+          onChange={onChangeHandlerPriceDeviation}
+          value={priceDeviationLong}
+        />
+      </h2>
+      <h2>
+        Price deviation % to open safety order - SHORT Strategy{" "}
+        <input
+          type="text"
+          onChange={(e) => setPriceDeviationShort(e.target.value)}
+          value={priceDeviationShort}
         />
       </h2>
       <h2>
