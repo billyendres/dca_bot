@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Pnl from "./Pnl";
 import CancelOrders from "./CancelOrders";
 import binance from "../binanceAPI/api";
@@ -10,21 +10,25 @@ export const baseSymbol = "RENUSDT";
 
 const App = () => {
   const [price, setPrice] = useState(null);
-  const [strategy, setStrategy] = useState(true);
+  //   const [strategy, setStrategy] = useState(true);
   const [positionSize, setPositionSize] = useState(null);
-  const [takeProfit, setTakeProfit] = useState(0.5);
+  const [takeProfitPercentage, setTakeProfitPercentage] = useState(0.0005);
   const [profitAndLoss, setProfitAndLoss] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
   const [priceDeviationLong, setPriceDeviationLong] = useState(0.998);
   const [priceDeviationShort, setPriceDeviationShort] = useState(1.002);
   const [safetyOrderStep, setSafetyOrderStep] = useState(1);
-  const [startBot, setStartBot] = useState(false);
-  const [stackBook, setStackBook] = useState(false);
-  const [pyramidQuantity, setPyramidQuantity] = useState();
-  const [pyramidOrder, setPyramidOrder] = useState(false);
+  const [startBotLong, setStartBotLong] = useState(false);
+  const [startBotShort, setStartBotShort] = useState(false);
+  const [stackBookLong, setStackBookLong] = useState(false);
+  const [stackBookShort, setStackBookShort] = useState(false);
+  const [cancelOrders, setCancelOrders] = useState(false);
+  //   const [pyramidQuantity, setPyramidQuantity] = useState();
+  //   const [pyramidOrder, setPyramidOrder] = useState(false);
   const [symbol, setSymbol] = useState(symbols);
-
+  //   const [Tpl, setTpL] = useState(false);
+  //   const [openOrders, setOpenOrders] = useState(null);
   const defaultOption = "RENUSDT";
 
   // Retreive PNL
@@ -36,7 +40,7 @@ const App = () => {
       };
       calclateProfitAndLoss();
       // console.log(price);
-    }, 3000);
+    }, 1000);
   }, []);
 
   // Retreive current coin/token price
@@ -48,7 +52,7 @@ const App = () => {
       };
       coinPrices();
       // console.log(price);
-    }, 10000);
+    }, 1000);
   }, []);
 
   // Calculate Position size
@@ -60,13 +64,13 @@ const App = () => {
         console.log(pos[47]);
       };
       size();
-    }, 10000);
+    }, 1000);
   }, []);
 
   //  PLace buy order
   useEffect(() => {
     const futuresLimitBuy = async () => {
-      if (startBot && strategy && stackBook) {
+      if (startBotLong && stackBookLong) {
         await binance.futuresBuy(
           baseSymbol,
           quantity,
@@ -177,22 +181,12 @@ const App = () => {
       }
     };
     futuresLimitBuy();
-  }, [startBot, strategy, stackBook]);
-
-  // Pyramid Buy
-  useEffect(() => {
-    const pyramidLong = async () => {
-      if (startBot && strategy && pyramidOrder) {
-        await binance.futuresMarketBuy(baseSymbol, pyramidQuantity);
-      }
-    };
-    pyramidLong();
-  }, [startBot, strategy, pyramidOrder]);
+  }, [startBotLong, stackBookLong]);
 
   // Place sell order
   useEffect(() => {
     const futuresLimitSell = async () => {
-      if (startBot && !strategy && stackBook) {
+      if (startBotShort && stackBookShort) {
         await binance.futuresSell(
           baseSymbol,
           quantity,
@@ -308,29 +302,71 @@ const App = () => {
       }
     };
     futuresLimitSell();
-  }, [startBot, strategy, stackBook]);
+  }, [startBotShort, stackBookShort]);
 
+  // Take profit
   useEffect(() => {
     const takeProfit = async () => {
-      if (profitAndLoss > 0.0003 && strategy) {
-        await binance.futuresSell(baseSymbol, positionSize, price);
+      // LONG
+      if (profitAndLoss > takeProfitPercentage && positionSize > 0) {
+        await binance.futuresMarketSell(baseSymbol, positionSize);
+        setCancelOrders(!cancelOrders);
       }
-      if (profitAndLoss < -0.0003 && !strategy) {
-        await binance.futuresSell(baseSymbol, positionSize, price);
+      // SHORT
+      if (profitAndLoss > takeProfitPercentage && positionSize < 0) {
+        await binance.futuresMarketBuy(baseSymbol, positionSize * -1);
+        setCancelOrders(!cancelOrders);
       }
     };
     takeProfit();
-  }, []);
+  }, [takeProfitPercentage, profitAndLoss, positionSize]);
 
-  // Pyramid Sell
+  // Cancel all active orders
   useEffect(() => {
-    const pyramidShort = async () => {
-      if (startBot && !strategy && pyramidOrder) {
-        await binance.futuresMarketSell(baseSymbol, pyramidQuantity);
+    const cancel = async () => {
+      if (cancelOrders) {
+        await binance.futuresCancelAll(baseSymbol);
+        setTimeout(() => {
+          setStackBookLong(!!stackBookLong);
+          setStackBookShort(!!stackBookShort);
+          console.log(stackBookLong);
+          console.log(stackBookShort);
+        }, 1500);
       }
     };
-    pyramidShort();
-  }, [startBot, strategy, pyramidOrder]);
+    cancel();
+  }, [cancelOrders]);
+
+  //   useEffect(() => {
+  //     setInterval(() => {
+  //       const orders = async () => {
+  //         let order = await binance.futuresOpenOrders(baseSymbol);
+  //         setOpenOrders(order);
+  //         console.log(openOrders);
+  //       };
+  //       orders();
+  //     }, 5000);
+  //   }, [openOrders]);
+
+  // Pyramid Buy
+  //     useEffect(() => {
+  //         const marketBuyLong = async () => {
+  //           if (pyramidOrder) {
+  //             await binance.futuresMarketBuy(baseSymbol, pyramidQuantity);
+  //           }
+  //         };
+  //         marketBuyLong();
+  //       }, [pyramidOrder]);
+
+  //   // Pyramid Sell
+  //   useEffect(() => {
+  //     const pyramidShort = async () => {
+  //       if (startBot && !strategy && pyramidOrder) {
+  //         await binance.futuresMarketSell(baseSymbol, pyramidQuantity);
+  //       }
+  //     };
+  //     pyramidShort();
+  //   }, [startBotShort, pyramidOrder]);
 
   return (
     <BaseStyle>
@@ -349,15 +385,15 @@ const App = () => {
       {/* <Pnl /> */}
       <h2>{`PNL(ROE%) = ${profitAndLoss}`}</h2>
       <h2>
-        Start Bot!{" "}
-        <button onClick={() => setStartBot(!startBot)}>
-          {!startBot ? "OFF" : "ON"}
+        Start Long Bot!{" "}
+        <button onClick={() => setStartBotLong(!startBotLong)}>
+          {!startBotLong ? "OFF" : "ON"}
         </button>
       </h2>
       <h2>
-        Select Strategy{" "}
-        <button onClick={() => setStrategy(!strategy)}>
-          {strategy ? "LONG" : "SHORT"}
+        Start Bot Short!{" "}
+        <button onClick={() => setStartBotShort(!startBotShort)}>
+          {!startBotShort ? "OFF" : "ON"}
         </button>
       </h2>
       <h2>
@@ -404,17 +440,23 @@ const App = () => {
         Select take profit %{" "}
         <input
           type="text"
-          onChange={(e) => setTakeProfit(e.target.value)}
-          value={takeProfit}
+          onChange={(e) => setTakeProfitPercentage(e.target.value)}
+          value={takeProfitPercentage}
         />
       </h2>
       <h2>
-        Stack the book {strategy ? "LONG" : "SHORT"}{" "}
-        <button onClick={() => setStackBook(!stackBook)}>
-          {!stackBook ? "PLACE ORDERS" : "ORDERS RECEIVED"}
+        Stack the book LONG
+        <button onClick={() => setStackBookLong(!stackBookLong)}>
+          {!stackBookLong ? "PLACE ORDERS" : "ORDERS RECEIVED"}
         </button>
       </h2>
       <h2>
+        Stack the book SHORT
+        <button onClick={() => setStackBookShort(!stackBookShort)}>
+          {!stackBookShort ? "PLACE ORDERS" : "ORDERS RECEIVED"}
+        </button>
+      </h2>
+      {/* <h2>
         Pyramid quantity (Market order) {strategy ? "LONG" : "SHORT"}{" "}
         <input
           type="text"
@@ -424,7 +466,7 @@ const App = () => {
         <button onClick={() => setPyramidOrder(!pyramidOrder)}>
           {!pyramidOrder ? "PYRAMID ORDER" : "PYRAMID ORDER COMPLETE"}
         </button>
-      </h2>
+      </h2> */}
       <CancelOrders />
     </BaseStyle>
   );
