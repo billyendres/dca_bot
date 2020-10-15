@@ -62,4 +62,8 @@ export const symbols = [
   "ENJUSDT",
   "FLMUSDT",
   "TOMOUSDT",
+  "NEARUSDT",
+  "KSMUSDT",
 ];
+
+export const dca = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
