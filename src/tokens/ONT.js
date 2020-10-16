@@ -5,10 +5,11 @@ import "react-dropdown/style.css";
 
 import { dca } from "../variables/symbols";
 
-const Ont = () => {
+const ONT = () => {
   const [price, setPrice] = useState(null);
   const [positionSize, setPositionSize] = useState(null);
   const [averagePrice, setAveragePrice] = useState(null);
+  const [takeProfitPrice, setTakeProfitPrice] = useState(null);
   const [takeProfitPercentageLong, setTakeProfitPercentageLong] = useState(
     1.003
   );
@@ -30,6 +31,8 @@ const Ont = () => {
   const [marketSell, setMarketSell] = useState(false);
   const [quantityMarketBuy, setQuantityMarketBuy] = useState(0);
   const [quantityMarketSell, setQuantityMarketSell] = useState(0);
+  const [takeProfitPriceLong, setTakeProfitPriceLong] = useState(null);
+  const [takeProfitPriceShort, setTakeProfitPriceShort] = useState(null);
 
   const baseSymbol = "ONTUSDT";
 
@@ -38,7 +41,8 @@ const Ont = () => {
     setInterval(() => {
       const calclateProfitAndLoss = async () => {
         let profit = await binance.futuresPositionRisk();
-        setProfitAndLoss(profit[60].unRealizedProfit);
+        setProfitAndLoss(profit[62].unRealizedProfit);
+        console.log(profit);
       };
       calclateProfitAndLoss();
     }, 1000);
@@ -62,8 +66,8 @@ const Ont = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setPositionSize(pos[60].positionAmt * 10);
-        console.log(pos[60]);
+        setPositionSize(pos[62].positionAmt * 10);
+        console.log(pos[62]);
       };
       size();
     }, 1000);
@@ -74,7 +78,7 @@ const Ont = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setAveragePrice(pos[60].entryPrice);
+        setAveragePrice(pos[62].entryPrice);
       };
       size();
     }, 1000);
@@ -777,32 +781,48 @@ const Ont = () => {
   }, [startBotShort, stackBookShort, baseSymbol, dcaAmount]);
   console.log(dcaAmount);
 
+  useEffect(() => {
+    const takeProfitLong = () => {
+      setTakeProfitPriceLong(averagePrice * takeProfitPercentageLong);
+    };
+    takeProfitLong();
+  }, [averagePrice, takeProfitPercentageLong]);
+
+  useEffect(() => {
+    const takeProfitShort = () => {
+      setTakeProfitPriceShort(averagePrice * takeProfitPercentageShort);
+    };
+    takeProfitShort();
+  }, [averagePrice, takeProfitPercentageShort]);
+
   // Take profit
   useEffect(() => {
     const takeProfit = async () => {
       // LONG
-      if (positionSize > 0) {
+
+      if (positionSize > 0 && startBotLong) {
         await binance.futuresSell(
           baseSymbol,
           positionSize,
-          parseFloat(averagePrice * takeProfitPercentageLong).toFixed(4),
+          parseFloat(takeProfitPriceLong).toFixed(4),
           {
             reduceOnly: true,
           }
         );
       }
-      if (positionSize > -1 && positionSize < 1) {
+      if (positionSize > -1 && positionSize < 1 && startBotShort) {
         setTimeout(() => {
           setRestackBook(!restackBook);
           setRestackBook(!restackBook);
         }, 2000);
       }
+
       // SHORT
-      if (positionSize < 0) {
+      if (positionSize < 0 && startBotShort) {
         await binance.futuresBuy(
           baseSymbol,
           positionSize * -1,
-          parseFloat(averagePrice * takeProfitPercentageShort).toFixed(4),
+          parseFloat(takeProfitPriceShort).toFixed(4),
           {
             reduceOnly: true,
           }
@@ -819,12 +839,16 @@ const Ont = () => {
   }, [
     takeProfitPercentageLong,
     takeProfitPercentageShort,
+    takeProfitPriceLong,
+    takeProfitPriceShort,
     profitAndLoss,
     positionSize,
     averagePrice,
+    startBotShort,
+    startBotLong,
   ]);
 
-  // Cancel all active orders
+  // Cancel
   useEffect(() => {
     const restack = async () => {
       if (restackBook) {
@@ -833,26 +857,12 @@ const Ont = () => {
       setTimeout(() => {
         setStackBookLong(restackBook);
         setStackBookShort(restackBook);
-        // console.log(`Cancel Orders ${restackBook}`);
-        // console.log(`Stack Long ${stackBookLong}`);
-        // console.log(`Stack short ${stackBookShort}`);
       }, 1000);
     };
     restack();
   }, [restackBook]);
 
-  //   useEffect(() => {
-  //     setInterval(() => {
-  //       const orders = async () => {
-  //         let order = await binance.futuresOpenOrders(baseSymbol);
-  //         setOpenOrders(order);
-  //         console.log(openOrders);
-  //       };
-  //       orders();
-  //     }, 5000);
-  //   }, [openOrders]);
-
-  // Pyramid Buy
+  // Market Buy
   useEffect(() => {
     const marketOrderLong = async () => {
       if (marketBuy) {
@@ -862,7 +872,7 @@ const Ont = () => {
     marketOrderLong();
   }, [marketBuy]);
 
-  // Pyramid Sell
+  // Market Sell
   useEffect(() => {
     const marketOrderShort = async () => {
       if (marketSell) {
@@ -874,40 +884,50 @@ const Ont = () => {
 
   return (
     <BaseStyle>
-      <h1>Billy's DCA Bot</h1>
-      <h2>{`TRADING PAIR: ${baseSymbol}`} </h2>
-      <h4>{`Current price of: ${baseSymbol} = ${price}`}</h4>
-      <h4>{`Current position size = ${positionSize}`}</h4>
-      <h4>{`PNL(ROE%) = ${profitAndLoss}`}</h4>
-      <h4>
+      <TradingPair>{`TRADING PAIR: ${baseSymbol}`} </TradingPair>
+      <Heading>{`Current price of: ${baseSymbol} = ${price}`}</Heading>
+      <Heading>{`Current position size = ${positionSize}`}</Heading>
+      <Heading>{`PNL(ROE%) = ${profitAndLoss}`}</Heading>
+      <Heading>{`Average Entry Price = ${averagePrice}`}</Heading>
+      {positionSize > 0 && (
+        <Heading>{`Take Profit Price Long = ${parseFloat(
+          takeProfitPriceLong
+        ).toFixed(4)}`}</Heading>
+      )}
+      {positionSize < 0 && (
+        <Heading>{`Take Profit Price Short = ${parseFloat(
+          takeProfitPriceShort
+        ).toFixed(4)}`}</Heading>
+      )}
+      <Heading>
         Start Long Bot!{" "}
-        <button onClick={() => setStartBotLong(!startBotLong)}>
+        <Button onClick={() => setStartBotLong(!startBotLong)}>
           {!startBotLong ? "OFF" : "ON"}
-        </button>
-      </h4>
-      <h4>
+        </Button>
+      </Heading>
+      <Heading>
         Start Bot Short!{" "}
-        <button onClick={() => setStartBotShort(!startBotShort)}>
+        <Button onClick={() => setStartBotShort(!startBotShort)}>
           {!startBotShort ? "OFF" : "ON"}
-        </button>
-      </h4>
-      <h4>
+        </Button>
+      </Heading>
+      <Heading>
         Base order quantity size:{" "}
         <input
           type="text"
           onChange={(e) => setQuantity(e.target.value)}
           value={quantity}
         />
-      </h4>
-      <h4>
+      </Heading>
+      <Heading>
         Safety order size eg. Base order * 2 (Compounding){" "}
         <input
           type="text"
           onChange={(e) => setDcaQuantity(e.target.value)}
           value={dcaQuantity}
         />
-      </h4>
-      <h4>
+      </Heading>
+      <Heading>
         Safety Order Quantity:{" "}
         <label>
           <select
@@ -919,85 +939,93 @@ const Ont = () => {
             ))}
           </select>
         </label>
-      </h4>
-      <h4>
+      </Heading>
+      <Heading>
         Price deviation % to open safety order - LONG Strategy{" "}
         <input
           type="text"
           onChange={(e) => setPriceDeviationLong(e.target.value)}
           value={priceDeviationLong}
         />
-      </h4>
-      <h4>
+      </Heading>
+      <Heading>
         Price deviation % to open safety order - SHORT Strategy{" "}
         <input
           type="text"
           onChange={(e) => setPriceDeviationShort(e.target.value)}
           value={priceDeviationShort}
         />
-      </h4>
-      {/* <h4>
-        Safety order step scale{" "}
-        <input
-          type="text"
-          onChange={(e) => setSafetyOrderStep(e.target.value)}
-          value={safetyOrderStep}
-        />
-      </h4> */}
-      <h4>
+      </Heading>
+      <Heading>
         Select take profit % Long{" "}
         <input
           type="text"
           onChange={(e) => setTakeProfitPercentageLong(e.target.value)}
           value={takeProfitPercentageLong}
         />
-      </h4>
-      <h4>
+      </Heading>
+      <Heading>
         Select take profit % Short{" "}
         <input
           type="text"
           onChange={(e) => setTakeProfitPercentageShort(e.target.value)}
           value={takeProfitPercentageShort}
         />
-      </h4>
-      <h4>
+      </Heading>
+      <Heading>
         Market Buy{" "}
         <input
           type="text"
           onChange={(e) => setQuantityMarketBuy(e.target.value)}
           value={quantityMarketBuy}
         />{" "}
-        <button onClick={() => setMarketBuy(!marketBuy)}>
+        <Button onClick={() => setMarketBuy(!marketBuy)}>
           {!marketBuy ? "MARKET BUY" : "BOUGHT @ MARKET"}
-        </button>
-      </h4>
-      <h4>
+        </Button>
+      </Heading>
+      <Heading>
         Market Sell{" "}
         <input
           type="text"
           onChange={(e) => setQuantityMarketSell(e.target.value)}
           value={quantityMarketSell}
         />{" "}
-        <button onClick={() => setMarketSell(!marketSell)}>
-          {!marketSell ? "MARKET SEll" : "SOLD @ MARKET"}
-        </button>
-      </h4>
-      <h4>
+        <Button onClick={() => setMarketSell(!marketSell)}>
+          {!marketSell ? "MARKET SELL" : "SOLD @ MARKET"}
+        </Button>
+      </Heading>
+      <Heading>
         STACK THE BOOK:{" "}
-        <button onClick={() => setRestackBook(!restackBook)}>
+        <Button onClick={() => setRestackBook(!restackBook)}>
           {!restackBook ? "Restack The Book " : "Stacked"}
-        </button>
-      </h4>
+        </Button>
+      </Heading>
     </BaseStyle>
   );
 };
 
-export default Ont;
+export default ONT;
 
 const BaseStyle = styled.div`
-  //   background-color: red;
+  padding: 0.5rem;
   font-family: arial;
   display: flex-wrap;
   justify-content: center;
-  text-align: center;
+`;
+
+const TradingPair = styled.h2`
+  padding: 0.5rem;
+`;
+
+const Heading = styled.h3`
+  padding: 0.2rem;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+`;
+
+const Button = styled.button`
+  font-size: 1em;
+  margin: 0.1em;
+  padding: 0.25em 1em;
+  border-radius: 3px;
 `;
