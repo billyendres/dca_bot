@@ -9,7 +9,12 @@ const Ont = () => {
   const [price, setPrice] = useState(null);
   const [positionSize, setPositionSize] = useState(null);
   const [averagePrice, setAveragePrice] = useState(null);
-  const [takeProfitPercentage, setTakeProfitPercentage] = useState(0.0015);
+  const [takeProfitPercentageLong, setTakeProfitPercentageLong] = useState(
+    1.003
+  );
+  const [takeProfitPercentageShort, setTakeProfitPercentageShort] = useState(
+    0.997
+  );
   const [profitAndLoss, setProfitAndLoss] = useState(null);
   const [quantity, setQuantity] = useState(0.1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
@@ -21,6 +26,10 @@ const Ont = () => {
   const [stackBookLong, setStackBookLong] = useState(false);
   const [stackBookShort, setStackBookShort] = useState(false);
   const [restackBook, setRestackBook] = useState(true);
+  const [marketBuy, setMarketBuy] = useState(false);
+  const [marketSell, setMarketSell] = useState(false);
+  const [quantityMarketBuy, setQuantityMarketBuy] = useState(0);
+  const [quantityMarketSell, setQuantityMarketSell] = useState(0);
 
   const baseSymbol = "ONTUSDT";
 
@@ -70,408 +79,703 @@ const Ont = () => {
       size();
     }, 1000);
   }, []);
+
   console.log(averagePrice);
+
+  const initialBuy = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity,
+      parseFloat(price * 0.999).toFixed(4)
+    );
+  };
+
+  const safetyOrderOneLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity * dcaQuantity,
+      parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(4)
+    );
+  };
+
+  const safetyOrderTwoLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity * dcaQuantity * dcaQuantity,
+      parseFloat(
+        price * priceDeviationLong * priceDeviationLong * priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderThreeLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity * dcaQuantity * dcaQuantity * dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderFourLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderFiveLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderSixLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderSevenLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderEightLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderNineLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderTenLong = async () => {
+    await binance.futuresBuy(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong *
+          priceDeviationLong
+      ).toFixed(4)
+    );
+  };
 
   // PLace buy order
   useEffect(() => {
     const futuresLimitBuy = async () => {
-      if (startBotLong && stackBookLong) {
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity,
-          parseFloat(price * 0.999).toFixed(4)
-        );
-        // Safety Order One
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity * dcaQuantity,
-          parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(4)
-        );
-        // Safety Order Two
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity * dcaQuantity * dcaQuantity,
-          parseFloat(
-            price * priceDeviationLong * priceDeviationLong * priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Three
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Four
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Five
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Six
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Seven
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Eight
-        await binance.futuresBuy(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong *
-              priceDeviationLong
-          ).toFixed(4)
-        );
-        // Safety Order Nine
-        // await binance.futuresBuy(
-        //   baseSymbol,
-        //   quantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity,
-        //   parseFloat(
-        //     price *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong
-        //   ).toFixed(4)
-        // );
-        // Safety Order Ten
-        // await binance.futuresBuy(
-        //   baseSymbol,
-        //   quantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity,
-        //   parseFloat(
-        //     price *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong *
-        //       priceDeviationLong
-        //   ).toFixed(4)
-        // );
+      if (startBotLong && stackBookLong && dcaAmount > 0 && dcaAmount < 2) {
+        initialBuy();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 1 &&
+        dcaAmount < 3
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 2 &&
+        dcaAmount < 4
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 3 &&
+        dcaAmount < 5
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 4 &&
+        dcaAmount < 6
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 5 &&
+        dcaAmount < 7
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+        safetyOrderFiveLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 6 &&
+        dcaAmount < 8
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+        safetyOrderFiveLong();
+        safetyOrderSixLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 7 &&
+        dcaAmount < 9
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+        safetyOrderFiveLong();
+        safetyOrderSixLong();
+        safetyOrderSevenLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 8 &&
+        dcaAmount < 10
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+        safetyOrderFiveLong();
+        safetyOrderSixLong();
+        safetyOrderSevenLong();
+        safetyOrderEightLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 9 &&
+        dcaAmount < 11
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+        safetyOrderFiveLong();
+        safetyOrderSixLong();
+        safetyOrderSevenLong();
+        safetyOrderEightLong();
+        safetyOrderNineLong();
+      } else if (
+        startBotLong &&
+        stackBookLong &&
+        dcaAmount > 10 &&
+        dcaAmount < 12
+      ) {
+        initialBuy();
+        safetyOrderOneLong();
+        safetyOrderTwoLong();
+        safetyOrderThreeLong();
+        safetyOrderFourLong();
+        safetyOrderFiveLong();
+        safetyOrderSixLong();
+        safetyOrderSevenLong();
+        safetyOrderEightLong();
+        safetyOrderNineLong();
+        safetyOrderTenLong();
+      } else {
       }
     };
     futuresLimitBuy();
   }, [startBotLong, stackBookLong, baseSymbol]);
 
+  const initialSell = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity,
+      parseFloat(price * 1.001).toFixed(4)
+    );
+  };
+
+  const safetyOrderOneShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity * dcaQuantity,
+      parseFloat(price * priceDeviationShort * priceDeviationShort).toFixed(4)
+    );
+  };
+
+  const safetyOrderTwoShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity * dcaQuantity * dcaQuantity,
+      parseFloat(
+        price * priceDeviationShort * priceDeviationShort * priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderThreeShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity * dcaQuantity * dcaQuantity * dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderFourShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderFiveShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderSixShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderSevenShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderEightShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderNineShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
+  const safetyOrderTenShort = async () => {
+    await binance.futuresSell(
+      baseSymbol,
+      quantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity *
+        dcaQuantity,
+      parseFloat(
+        price *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort *
+          priceDeviationShort
+      ).toFixed(4)
+    );
+  };
+
   // Place sell order
   useEffect(() => {
     const futuresLimitSell = async () => {
-      if (startBotShort && stackBookShort) {
-        await binance.futuresSell(
-          baseSymbol,
-          quantity,
-          parseFloat(price * 1.001).toFixed(4)
-        );
-        // Safety Order One
-        await binance.futuresSell(
-          baseSymbol,
-          quantity * dcaQuantity,
-          parseFloat(price * priceDeviationShort * priceDeviationShort).toFixed(
-            4
-          )
-        );
-        // Safety Order Two
-        await binance.futuresSell(
-          baseSymbol,
-          quantity * dcaQuantity * dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Three
-        await binance.futuresSell(
-          baseSymbol,
-          quantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Four
-        await binance.futuresSell(
-          baseSymbol,
-          quantity * dcaQuantity * dcaQuantity * dcaQuantity * dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Five
-        await binance.futuresSell(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Six
-        await binance.futuresSell(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Seven
-        await binance.futuresSell(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Eight
-        await binance.futuresSell(
-          baseSymbol,
-          quantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity *
-            dcaQuantity,
-          parseFloat(
-            price *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort *
-              priceDeviationShort
-          ).toFixed(4)
-        );
-        // Safety Order Nine
-        // await binance.futuresSell(
-        //   baseSymbol,
-        //   quantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity,
-        //   parseFloat(
-        //     price *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort
-        //   ).toFixed(4)
-        // );
-        // Safety Order Ten
-        // await binance.futuresSell(
-        //   baseSymbol,
-        //   quantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity *
-        //     dcaQuantity,
-        //   parseFloat(
-        //     price *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort *
-        //       priceDeviationShort
-        //   ).toFixed(4)
-        // );
+      if (startBotShort && stackBookShort && dcaAmount > 0 && dcaAmount < 2) {
+        initialSell();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 1 &&
+        dcaAmount < 3
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 2 &&
+        dcaAmount < 4
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 3 &&
+        dcaAmount < 5
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 4 &&
+        dcaAmount < 6
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 5 &&
+        dcaAmount < 7
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+        safetyOrderFiveShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 6 &&
+        dcaAmount < 8
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+        safetyOrderFiveShort();
+        safetyOrderSixShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 7 &&
+        dcaAmount < 9
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+        safetyOrderFiveShort();
+        safetyOrderSixShort();
+        safetyOrderSevenShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 8 &&
+        dcaAmount < 10
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+        safetyOrderFiveShort();
+        safetyOrderSixShort();
+        safetyOrderSevenShort();
+        safetyOrderEightShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 9 &&
+        dcaAmount < 11
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+        safetyOrderFiveShort();
+        safetyOrderSixShort();
+        safetyOrderSevenShort();
+        safetyOrderEightShort();
+        safetyOrderNineShort();
+      } else if (
+        startBotShort &&
+        stackBookShort &&
+        dcaAmount > 10 &&
+        dcaAmount < 12
+      ) {
+        initialSell();
+        safetyOrderOneShort();
+        safetyOrderTwoShort();
+        safetyOrderThreeShort();
+        safetyOrderFourShort();
+        safetyOrderFiveShort();
+        safetyOrderSixShort();
+        safetyOrderSevenShort();
+        safetyOrderEightShort();
+        safetyOrderNineShort();
+        safetyOrderTenShort();
+      } else {
       }
     };
     futuresLimitSell();
   }, [startBotShort, stackBookShort, baseSymbol, dcaAmount]);
-
-  //   console.log(dcaAmount);
+  console.log(dcaAmount);
 
   // Take profit
   useEffect(() => {
@@ -481,7 +785,7 @@ const Ont = () => {
         await binance.futuresSell(
           baseSymbol,
           positionSize,
-          parseFloat(averagePrice * 1.003).toFixed(4),
+          parseFloat(averagePrice * takeProfitPercentageLong).toFixed(4),
           {
             reduceOnly: true,
           }
@@ -498,7 +802,7 @@ const Ont = () => {
         await binance.futuresBuy(
           baseSymbol,
           positionSize * -1,
-          parseFloat(averagePrice * 0.997).toFixed(4),
+          parseFloat(averagePrice * takeProfitPercentageShort).toFixed(4),
           {
             reduceOnly: true,
           }
@@ -512,7 +816,13 @@ const Ont = () => {
       }
     };
     takeProfit();
-  }, [takeProfitPercentage, profitAndLoss, positionSize, averagePrice]);
+  }, [
+    takeProfitPercentageLong,
+    takeProfitPercentageShort,
+    profitAndLoss,
+    positionSize,
+    averagePrice,
+  ]);
 
   // Cancel all active orders
   useEffect(() => {
@@ -543,25 +853,24 @@ const Ont = () => {
   //   }, [openOrders]);
 
   // Pyramid Buy
-  //     useEffect(() => {
-  //         const marketBuyLong = async () => {
-  //           if (pyramidOrder) {
-  //             await binance.futuresMarketBuy(symbol, pyramidQuantity);
-  //           }
-  //         };
-  //         marketBuyLong();
-  //       }, [pyramidOrder]);
+  useEffect(() => {
+    const marketOrderLong = async () => {
+      if (marketBuy) {
+        await binance.futuresMarketBuy(baseSymbol, quantityMarketBuy);
+      }
+    };
+    marketOrderLong();
+  }, [marketBuy]);
 
-  //   // Pyramid Sell
-  //   useEffect(() => {
-  //     const pyramidShort = async () => {
-  //       if (startBot && !strategy && pyramidOrder) {
-  //         await binance.futuresMarketSell(symbol, pyramidQuantity);
-  //       }
-  //     };
-  //     pyramidShort();
-  //   }, [startBotShort, pyramidOrder]);
-  //   console.log(symbol);
+  // Pyramid Sell
+  useEffect(() => {
+    const marketOrderShort = async () => {
+      if (marketSell) {
+        await binance.futuresMarketSell(baseSymbol, quantityMarketSell);
+      }
+    };
+    marketOrderShort();
+  }, [marketSell]);
 
   return (
     <BaseStyle>
@@ -612,7 +921,7 @@ const Ont = () => {
         </label>
       </h4>
       <h4>
-        Price deviation % to open safety order - LONG Strategy (Default 0.2%){" "}
+        Price deviation % to open safety order - LONG Strategy{" "}
         <input
           type="text"
           onChange={(e) => setPriceDeviationLong(e.target.value)}
@@ -620,7 +929,7 @@ const Ont = () => {
         />
       </h4>
       <h4>
-        Price deviation % to open safety order - SHORT Strategy (Default 0.2%){" "}
+        Price deviation % to open safety order - SHORT Strategy{" "}
         <input
           type="text"
           onChange={(e) => setPriceDeviationShort(e.target.value)}
@@ -636,24 +945,43 @@ const Ont = () => {
         />
       </h4> */}
       <h4>
-        Select take profit %{" "}
+        Select take profit % Long{" "}
         <input
           type="text"
-          onChange={(e) => setTakeProfitPercentage(e.target.value)}
-          value={takeProfitPercentage}
+          onChange={(e) => setTakeProfitPercentageLong(e.target.value)}
+          value={takeProfitPercentageLong}
         />
       </h4>
-      {/* <h4>
-        Pyramid quantity (Market order) {strategy ? "LONG" : "SHORT"}{" "}
+      <h4>
+        Select take profit % Short{" "}
         <input
           type="text"
-          onChange={(e) => setPyramidQuantity(e.target.value)}
-          value={pyramidQuantity}
+          onChange={(e) => setTakeProfitPercentageShort(e.target.value)}
+          value={takeProfitPercentageShort}
+        />
+      </h4>
+      <h4>
+        Market Buy{" "}
+        <input
+          type="text"
+          onChange={(e) => setQuantityMarketBuy(e.target.value)}
+          value={quantityMarketBuy}
         />{" "}
-        <button onClick={() => setPyramidOrder(!pyramidOrder)}>
-          {!pyramidOrder ? "PYRAMID ORDER" : "PYRAMID ORDER COMPLETE"}
+        <button onClick={() => setMarketBuy(!marketBuy)}>
+          {!marketBuy ? "MARKET BUY" : "BOUGHT @ MARKET"}
         </button>
-      </h4> */}
+      </h4>
+      <h4>
+        Market Sell{" "}
+        <input
+          type="text"
+          onChange={(e) => setQuantityMarketSell(e.target.value)}
+          value={quantityMarketSell}
+        />{" "}
+        <button onClick={() => setMarketSell(!marketSell)}>
+          {!marketSell ? "MARKET SEll" : "SOLD @ MARKET"}
+        </button>
+      </h4>
       <h4>
         STACK THE BOOK:{" "}
         <button onClick={() => setRestackBook(!restackBook)}>
