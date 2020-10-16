@@ -2,6 +2,7 @@
   "name": "dca_bot",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://billyendres.github.io/DCA_BOT/",
   "proxy": "https://fapi.binance.com/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
