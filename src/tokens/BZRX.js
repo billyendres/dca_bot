@@ -66,7 +66,7 @@ const BZRX = () => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
         setPositionSize(pos[23].positionAmt);
-        console.log(pos[23]);
+        console.log(pos);
       };
       size();
     }, 1000);

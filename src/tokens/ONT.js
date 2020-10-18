@@ -9,19 +9,18 @@ const ONT = () => {
   const [price, setPrice] = useState(null);
   const [positionSize, setPositionSize] = useState(null);
   const [averagePrice, setAveragePrice] = useState(null);
-  const [takeProfitPrice, setTakeProfitPrice] = useState(null);
   const [takeProfitPercentageLong, setTakeProfitPercentageLong] = useState(
-    1.003
+    1.004
   );
   const [takeProfitPercentageShort, setTakeProfitPercentageShort] = useState(
-    0.997
+    0.996
   );
   const [profitAndLoss, setProfitAndLoss] = useState(null);
-  const [quantity, setQuantity] = useState(0.1);
+  const [quantity, setQuantity] = useState(1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
   const [dcaAmount, setDcaAmount] = useState(4);
-  const [priceDeviationLong, setPriceDeviationLong] = useState(0.999);
-  const [priceDeviationShort, setPriceDeviationShort] = useState(1.001);
+  const [priceDeviationLong, setPriceDeviationLong] = useState(0.997);
+  const [priceDeviationShort, setPriceDeviationShort] = useState(1.003);
   const [startBotLong, setStartBotLong] = useState(false);
   const [startBotShort, setStartBotShort] = useState(false);
   const [stackBookLong, setStackBookLong] = useState(false);
@@ -34,7 +33,7 @@ const ONT = () => {
   const [takeProfitPriceLong, setTakeProfitPriceLong] = useState(null);
   const [takeProfitPriceShort, setTakeProfitPriceShort] = useState(null);
 
-  const baseSymbol = "ONTUSDT";
+  const baseSymbol = "BZRXUSDT";
 
   // Retreive PNL
   useEffect(() => {
@@ -53,8 +52,8 @@ const ONT = () => {
     setInterval(() => {
       const coinPrices = async () => {
         let tokenPrice = await binance.futuresPrices();
-        setPrice(tokenPrice.ONTUSDT);
-        // console.log(tokenPrice.ONTUSDT);
+        setPrice(tokenPrice.BZRXUSDT);
+        // console.log(tokenPrice.BZRXUSDT);
       };
       coinPrices();
     }, 1000);
@@ -66,8 +65,8 @@ const ONT = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setPositionSize(pos[62].positionAmt * 10);
-        console.log(pos[62]);
+        setPositionSize(pos[62].positionAmt);
+        console.log(pos);
       };
       size();
     }, 1000);
@@ -90,7 +89,7 @@ const ONT = () => {
     await binance.futuresBuy(
       baseSymbol,
       quantity,
-      parseFloat(price * 0.999).toFixed(4)
+      parseFloat(price * 0.998).toFixed(4)
     );
   };
 
@@ -437,7 +436,7 @@ const ONT = () => {
     await binance.futuresSell(
       baseSymbol,
       quantity,
-      parseFloat(price * 1.001).toFixed(4)
+      parseFloat(price * 1.002).toFixed(4)
     );
   };
 
@@ -799,7 +798,6 @@ const ONT = () => {
   useEffect(() => {
     const takeProfit = async () => {
       // LONG
-
       if (positionSize > 0 && startBotLong) {
         await binance.futuresSell(
           baseSymbol,
@@ -816,7 +814,6 @@ const ONT = () => {
           setRestackBook(!restackBook);
         }, 2000);
       }
-
       // SHORT
       if (positionSize < 0 && startBotShort) {
         await binance.futuresBuy(
@@ -848,7 +845,7 @@ const ONT = () => {
     startBotLong,
   ]);
 
-  // Cancel
+  // Cancel all active orders
   useEffect(() => {
     const restack = async () => {
       if (restackBook) {
@@ -913,7 +910,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Base order quantity size:{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setQuantity(e.target.value)}
           value={quantity}
@@ -921,7 +918,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Safety order size eg. Base order * 2 (Compounding){" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setDcaQuantity(e.target.value)}
           value={dcaQuantity}
@@ -942,7 +939,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Price deviation % to open safety order - LONG Strategy{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setPriceDeviationLong(e.target.value)}
           value={priceDeviationLong}
@@ -950,7 +947,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Price deviation % to open safety order - SHORT Strategy{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setPriceDeviationShort(e.target.value)}
           value={priceDeviationShort}
@@ -958,7 +955,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Select take profit % Long{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setTakeProfitPercentageLong(e.target.value)}
           value={takeProfitPercentageLong}
@@ -966,7 +963,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Select take profit % Short{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setTakeProfitPercentageShort(e.target.value)}
           value={takeProfitPercentageShort}
@@ -974,7 +971,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Market Buy{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setQuantityMarketBuy(e.target.value)}
           value={quantityMarketBuy}
@@ -985,7 +982,7 @@ const ONT = () => {
       </Heading>
       <Heading>
         Market Sell{" "}
-        <input
+        <Input
           type="text"
           onChange={(e) => setQuantityMarketSell(e.target.value)}
           value={quantityMarketSell}
@@ -1024,6 +1021,13 @@ const Heading = styled.h3`
 `;
 
 const Button = styled.button`
+  font-size: 1em;
+  margin: 0.1em;
+  padding: 0.25em 1em;
+  border-radius: 3px;
+`;
+
+const Input = styled.input`
   font-size: 1em;
   margin: 0.1em;
   padding: 0.25em 1em;
