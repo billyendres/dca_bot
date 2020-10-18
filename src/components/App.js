@@ -14,6 +14,7 @@ import XLM from "../tokens/XLM";
 import ADA from "../tokens/ADA";
 import FLM from "../tokens/FLM";
 import FTM from "../tokens/FTM";
+import RUNE from "../tokens/RUNE";
 import XMR from "../tokens/XMR";
 import DASH from "../tokens/DASH";
 import BZRX from "../tokens/BZRX";
@@ -47,6 +48,7 @@ const App = () => {
         {showComponentOne === "BZRXUSDT" && <BZRX />}
         {showComponentOne === "FLMUSDT" && <FLM />}
         {showComponentOne === "FTMUSDT" && <FTM />}
+        {showComponentOne === "RUNEUSDT" && <RUNE />}
       </PairOne>
       <PairTwo>
         <PairTwoDropdown>
@@ -67,6 +69,7 @@ const App = () => {
         {showComponentTwo === "BZRXUSDT" && <BZRX />}
         {showComponentTwo === "FLMUSDT" && <FLM />}
         {showComponentTwo === "FTMUSDT" && <FTM />}
+        {showComponentTwo === "RUNEUSDT" && <RUNE />}
       </PairTwo>
 
       {/* <BTC />
