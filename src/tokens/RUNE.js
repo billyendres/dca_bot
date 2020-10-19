@@ -812,7 +812,7 @@ const RUNE = () => {
         setTimeout(() => {
           setRestackBook(!restackBook);
           setRestackBook(!restackBook);
-        }, 2000);
+        }, 3000);
       }
       // SHORT
       if (positionSize < 0 && startBotShort) {
@@ -829,7 +829,7 @@ const RUNE = () => {
         setTimeout(() => {
           setRestackBook(!restackBook);
           setRestackBook(!restackBook);
-        }, 2000);
+        }, 3000);
       }
     };
     takeProfit();
