@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { symbols } from "../variables/symbols";
+import binance from "../binanceAPI/api";
 import BTC from "../tokens/BTC";
 import ETH from "../tokens/ETH";
 import BCH from "../tokens/BCH";
@@ -15,15 +16,39 @@ import ADA from "../tokens/ADA";
 import FLM from "../tokens/FLM";
 import FTM from "../tokens/FTM";
 import RUNE from "../tokens/RUNE";
+import SUSHI from "../tokens/SUSHI";
 import XMR from "../tokens/XMR";
 import DASH from "../tokens/DASH";
 import BZRX from "../tokens/BZRX";
+import LRC from "../tokens/LRC";
+import ENJ from "../tokens/ENJ";
+import WAVES from "../tokens/WAVES";
+import AAVE from "../tokens/AAVE";
 
 import ONT from "../tokens/ONT";
 
 const App = () => {
   const [showComponentOne, setShowComponentOne] = useState("");
   const [showComponentTwo, setShowComponentTwo] = useState("");
+
+  // Retreive current coin/token price
+  useEffect(() => {
+    setInterval(() => {
+      const coinPrices = async () => {
+        let tokenPrice = await binance.futuresPositionRisk();
+        console.log(tokenPrice);
+        // tokenPrice.map((token) => {
+        //   for (const [key, value] of Object.entries(token)) {
+        //     console.log(`${key} ${value}`);
+        //   }
+        //   console.log(token.symbol);
+        //   console.log(token);
+        // });
+      };
+      coinPrices();
+    }, 1000);
+    // console.log(price);
+  }, []);
 
   return (
     <>
@@ -49,6 +74,11 @@ const App = () => {
         {showComponentOne === "FLMUSDT" && <FLM />}
         {showComponentOne === "FTMUSDT" && <FTM />}
         {showComponentOne === "RUNEUSDT" && <RUNE />}
+        {showComponentOne === "LRCUSDT" && <LRC />}
+        {showComponentOne === "ENJUSDT" && <ENJ />}
+        {showComponentOne === "WAVESUSDT" && <WAVES />}
+        {showComponentOne === "SUSHIUSDT" && <SUSHI />}
+        {showComponentOne === "AAVEUSDT" && <AAVE />}
       </PairOne>
       <PairTwo>
         <PairTwoDropdown>
@@ -70,6 +100,11 @@ const App = () => {
         {showComponentTwo === "FLMUSDT" && <FLM />}
         {showComponentTwo === "FTMUSDT" && <FTM />}
         {showComponentTwo === "RUNEUSDT" && <RUNE />}
+        {showComponentTwo === "LRCUSDT" && <LRC />}
+        {showComponentTwo === "ENJUSDT" && <ENJ />}
+        {showComponentTwo === "WAVESUSDT" && <WAVES />}
+        {showComponentTwo === "SUSHIUSDT" && <SUSHI />}
+        {showComponentTwo === "AAVEUSDT" && <AAVE />}
       </PairTwo>
 
       {/* <BTC />

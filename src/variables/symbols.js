@@ -28,6 +28,7 @@ export const symbols = [
   "ZRXUSDT",
   "COMPUSDT",
   "VETUSDT",
+  "AAVEUSDT",
   "ALGOUSDT",
   "ZILUSDT",
   "OMGUSDT",
@@ -65,6 +66,7 @@ export const symbols = [
   "TOMOUSDT",
   "NEARUSDT",
   "KSMUSDT",
+  "LRCUSDT",
 ];
 
 export const dca = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];

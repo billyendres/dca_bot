@@ -40,7 +40,7 @@ const FLM = () => {
     setInterval(() => {
       const calclateProfitAndLoss = async () => {
         let profit = await binance.futuresPositionRisk();
-        setProfitAndLoss(profit[66].unRealizedProfit);
+        setProfitAndLoss(profit[68].unRealizedProfit);
         console.log(profit);
       };
       calclateProfitAndLoss();
@@ -65,8 +65,8 @@ const FLM = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setPositionSize(pos[66].positionAmt);
-        console.log(pos[66]);
+        setPositionSize(pos[68].positionAmt);
+        console.log(pos[68]);
       };
       size();
     }, 1000);
@@ -77,7 +77,7 @@ const FLM = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setAveragePrice(pos[66].entryPrice);
+        setAveragePrice(pos[68].entryPrice);
       };
       size();
     }, 1000);

@@ -5,7 +5,7 @@ import "react-dropdown/style.css";
 
 import { dca } from "../variables/symbols";
 
-const ONT = () => {
+const LRC = () => {
   const [price, setPrice] = useState(null);
   const [positionSize, setPositionSize] = useState(null);
   const [averagePrice, setAveragePrice] = useState(null);
@@ -19,8 +19,8 @@ const ONT = () => {
   const [quantity, setQuantity] = useState(1);
   const [dcaQuantity, setDcaQuantity] = useState(2);
   const [dcaAmount, setDcaAmount] = useState(4);
-  const [priceDeviationLong, setPriceDeviationLong] = useState(0.997);
-  const [priceDeviationShort, setPriceDeviationShort] = useState(1.003);
+  const [priceDeviationLong, setPriceDeviationLong] = useState(0.996);
+  const [priceDeviationShort, setPriceDeviationShort] = useState(1.004);
   const [startBotLong, setStartBotLong] = useState(false);
   const [startBotShort, setStartBotShort] = useState(false);
   const [stackBookLong, setStackBookLong] = useState(false);
@@ -33,14 +33,14 @@ const ONT = () => {
   const [takeProfitPriceLong, setTakeProfitPriceLong] = useState(null);
   const [takeProfitPriceShort, setTakeProfitPriceShort] = useState(null);
 
-  const baseSymbol = "ONTUSDT";
+  const baseSymbol = "LRCUSDT";
 
   // Retreive PNL
   useEffect(() => {
     setInterval(() => {
       const calclateProfitAndLoss = async () => {
         let profit = await binance.futuresPositionRisk();
-        setProfitAndLoss(profit[64].unRealizedProfit);
+        setProfitAndLoss(profit[32].unRealizedProfit);
         console.log(profit);
       };
       calclateProfitAndLoss();
@@ -52,8 +52,8 @@ const ONT = () => {
     setInterval(() => {
       const coinPrices = async () => {
         let tokenPrice = await binance.futuresPrices();
-        setPrice(tokenPrice.ONTUSDT);
-        // console.log(tokenPrice.ONTUSDT);
+        setPrice(tokenPrice.LRCUSDT);
+        // console.log(tokenPrice.LRCUSDT);
       };
       coinPrices();
     }, 1000);
@@ -65,7 +65,7 @@ const ONT = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setPositionSize(pos[64].positionAmt);
+        setPositionSize(pos[32].positionAmt);
         console.log(pos);
       };
       size();
@@ -77,7 +77,7 @@ const ONT = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setAveragePrice(pos[64].entryPrice);
+        setAveragePrice(pos[32].entryPrice);
       };
       size();
     }, 1000);
@@ -89,7 +89,7 @@ const ONT = () => {
     await binance.futuresBuy(
       baseSymbol,
       quantity,
-      parseFloat(price * 0.998).toFixed(4)
+      parseFloat(price * 0.998).toFixed(5)
     );
   };
 
@@ -97,7 +97,7 @@ const ONT = () => {
     await binance.futuresBuy(
       baseSymbol,
       quantity * dcaQuantity,
-      parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(4)
+      parseFloat(price * priceDeviationLong * priceDeviationLong).toFixed(5)
     );
   };
 
@@ -107,7 +107,7 @@ const ONT = () => {
       quantity * dcaQuantity * dcaQuantity,
       parseFloat(
         price * priceDeviationLong * priceDeviationLong * priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -121,7 +121,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -136,7 +136,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -157,7 +157,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -180,7 +180,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -205,7 +205,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -232,7 +232,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -261,7 +261,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -292,7 +292,7 @@ const ONT = () => {
           priceDeviationLong *
           priceDeviationLong *
           priceDeviationLong
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -436,7 +436,7 @@ const ONT = () => {
     await binance.futuresSell(
       baseSymbol,
       quantity,
-      parseFloat(price * 1.002).toFixed(4)
+      parseFloat(price * 1.002).toFixed(5)
     );
   };
 
@@ -444,7 +444,7 @@ const ONT = () => {
     await binance.futuresSell(
       baseSymbol,
       quantity * dcaQuantity,
-      parseFloat(price * priceDeviationShort * priceDeviationShort).toFixed(4)
+      parseFloat(price * priceDeviationShort * priceDeviationShort).toFixed(5)
     );
   };
 
@@ -454,7 +454,7 @@ const ONT = () => {
       quantity * dcaQuantity * dcaQuantity,
       parseFloat(
         price * priceDeviationShort * priceDeviationShort * priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -468,7 +468,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -483,7 +483,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -504,7 +504,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -527,7 +527,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -552,7 +552,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -579,7 +579,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -608,7 +608,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -639,7 +639,7 @@ const ONT = () => {
           priceDeviationShort *
           priceDeviationShort *
           priceDeviationShort
-      ).toFixed(4)
+      ).toFixed(5)
     );
   };
 
@@ -802,7 +802,7 @@ const ONT = () => {
         await binance.futuresSell(
           baseSymbol,
           positionSize,
-          parseFloat(takeProfitPriceLong).toFixed(4),
+          parseFloat(takeProfitPriceLong).toFixed(5),
           {
             reduceOnly: true,
           }
@@ -819,7 +819,7 @@ const ONT = () => {
         await binance.futuresBuy(
           baseSymbol,
           positionSize * -1,
-          parseFloat(takeProfitPriceShort).toFixed(4),
+          parseFloat(takeProfitPriceShort).toFixed(5),
           {
             reduceOnly: true,
           }
@@ -1001,7 +1001,7 @@ const ONT = () => {
   );
 };
 
-export default ONT;
+export default LRC;
 
 const BaseStyle = styled.div`
   padding: 0.5rem;

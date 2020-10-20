@@ -40,7 +40,7 @@ const RUNE = () => {
     setInterval(() => {
       const calclateProfitAndLoss = async () => {
         let profit = await binance.futuresPositionRisk();
-        setProfitAndLoss(profit[40].unRealizedProfit);
+        setProfitAndLoss(profit[41].unRealizedProfit);
         console.log(profit);
       };
       calclateProfitAndLoss();
@@ -65,7 +65,7 @@ const RUNE = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setPositionSize(pos[40].positionAmt);
+        setPositionSize(pos[41].positionAmt);
         console.log(pos);
       };
       size();
@@ -77,7 +77,7 @@ const RUNE = () => {
     setInterval(() => {
       const size = async () => {
         let pos = await binance.futuresPositionRisk();
-        setAveragePrice(pos[40].entryPrice);
+        setAveragePrice(pos[41].entryPrice);
       };
       size();
     }, 1000);
